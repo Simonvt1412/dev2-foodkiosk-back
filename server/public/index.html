@@ -14,6 +14,8 @@
         .quick-actions {
             position: sticky;
             top: 20px;
+            height: calc(100vh - 40px);
+            overflow-y: auto;
         }
         .top-nav {
             background-color: #f8f9fa;
@@ -40,16 +42,16 @@
     <div class="container-fluid top-nav">
         <div class="container">
             <a href="index.html" class="active">Dashboard</a>
-            <a href="check-inventory.html">Check Inventory</a>
-            <a href="menu-management.html">Menu Management</a>
-            <a href="order-tracking.html">Order Tracking</a>
+            <a href="cip.html">Check Inventory</a>
+            <a href="mmp.html">Menu Management</a>
+            <a href="otp.html">Order Tracking</a>
         </div>
     </div>
 
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar with Quick Actions -->
-            <div class="col-md-2 bg-light p-3">
+            <div class="col-md-2 bg-light p-3 quick-actions">
                 <h5>Quick Actions</h5>
                 <div class="list-group">
                     <a href="#add-new-dish" class="list-group-item list-group-item-action">Add New Dish</a>
@@ -91,10 +93,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Existing sections from the original document -->
-                <!-- Add New Dish, Update Prices, Check Inventory, View Reports sections remain unchanged -->
-                <!-- (All previous content from the original document is preserved) -->
 
                 <!-- Add New Dish Section -->
                 <div id="add-new-dish" class="section">
