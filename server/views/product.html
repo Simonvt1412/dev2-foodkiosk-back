@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasta Pop-Up Admin - Product Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #343a40;
+            min-height: 100vh;
+            position: fixed;
+            padding-top: 20px;
+        }
+        .sidebar-link {
+            color: #ced4da;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover {
+            background-color: #495057;
+            color: white;
+        }
+        .sidebar-link.active {
+            background-color: #ff6b6b;
+            color: white;
+        }
+        .sidebar-link i {
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #ff6b6b;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+        .btn-primary:hover {
+            background-color: #ff5252;
+            border-color: #ff5252;
+        }
+        .image-preview {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 5px;
+            margin-top: 10px;
+        }
+        .sidebar-brand {
+            padding: 15px;
+            color: white;
+            font-family: 'Oregano', cursive;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Oregano:ital@0;1&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <div class="sidebar-brand">
+                    <span>Pasta Pop-Up</span>
+                    <div>Admin Panel</div>
+                </div>
+                <a href="dashboard.html" class="sidebar-link">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a href="products.html" class="sidebar-link active">
+                    <i class="bi bi-box"></i> Products
+                </a>
+                <a href="categories.html" class="sidebar-link">
+                    <i class="bi bi-tags"></i> Categories
+                </a>
+                <a href="orders.html" class="sidebar-link">
+                    <i class="bi bi-cart3"></i> Orders
+                </a>
+                <a href="login.html" class="sidebar-link mt-5">
+                    <i class="bi bi-box-arrow-left"></i> Logout
+                </a>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1>Edit Product</h1>
+                    <a href="products.html" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Products
+                    </a>
+                </div>
+
+                <!-- Product Form Card -->
+                <div class="card">
+                    <div class="card-header">
+                        Product Information
+                    </div>
+                    <div class="card-body">
+                        <form action="products.html" method="get">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="productName" class="form-label">Product Name</label>
+                                    <input type="text" class="form-control" id="productName" name="productName" value="Spaghetti" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select class="form-select" id="category" name="category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="1" selected>Pasta Type</option>
+                                        <option value="2">Sauce</option>
+                                        <option value="3">Extra</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="price" class="form-label">Price ($)</label>
+                                    <input type="number" class="form-control" id="price" name="price" step="0.01" value="0.00" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" id="status" name="status" required>
+                                        <option value="1" selected>Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3">Classic long pasta strands, perfect for soaking up sauce.</textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Product Image</label>
+                                <input type="file" class="form-control" id="image" name="image">
+                                <div class="mt-2">
+                                    <img src="placeholder-pasta.jpg" alt="Product Image Preview" class="image-preview">
+                                </div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="d-flex justify-content-end">
+                                <a href="products.html" class="btn btn-outline-secondary me-2">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Save Product</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasta Pop-Up Admin - Categories</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #343a40;
+            min-height: 100vh;
+            position: fixed;
+            padding-top: 20px;
+        }
+        .sidebar-link {
+            color: #ced4da;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+            transition: all 0.3s;
+        }
+        .sidebar-link:hover {
+            background-color: #495057;
+            color: white;
+        }
+        .sidebar-link.active {
+            background-color: #ff6b6b;
+            color: white;
+        }
+        .sidebar-link i {
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #ff6b6b;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-primary {
+            background-color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+        .btn-primary:hover {
+            background-color: #ff5252;
+            border-color: #ff5252;
+        }
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .category-icon i {
+            font-size: 1.25rem;
+            color: #ff6b6b;
+        }
+        .sidebar-brand {
+            padding: 15px;
+            color: white;
+            font-family: 'Oregano', cursive;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Oregano:ital@0;1&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <div class="sidebar-brand">
+                    <span>Pasta Pop-Up</span>
+                    <div>Admin Panel</div>
+                </div>
+                <a href="dashboard.html" class="sidebar-link">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+                <a href="products.html" class="sidebar-link">
+                    <i class="bi bi-box"></i> Products
+                </a>
+                <a href="categories.html" class="sidebar-link active">
+                    <i class="bi bi-tags"></i> Categories
+                </a>
+                <a href="orders.html" class="sidebar-link">
+                    <i class="bi bi-cart3"></i> Orders
+                </a>
+                <a href="login.html" class="sidebar-link mt-5">
+                    <i class="bi bi-box-arrow-left"></i> Logout
+                </a>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 main-content">
+                <h1 class="mb-4">Categories</h1>
+
+                <!-- Categories Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <span>Category List</span>
+                        <a href="category-form.html" class="btn btn-sm btn-light">
+                            <i class="bi bi-plus-lg"></i> Add New Category
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Products</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="category-icon">
+                                                    <i class="bi bi-hash"></i>
+                                                </div>
+                                                Pasta Type
+                                            </div>
+                                        </td>
+                                        <td>Different types of pasta available</td>
+                                        <td>6</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td>
+                                            <a href="category-form.html?id=1" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="category-icon">
+                                                    <i class="bi bi-droplet"></i>
+                                                </div>
+                                                Sauce
+                                            </div>
+                                        </td>
+                                        <td>Different sauces for pasta</td>
+                                        <td>6</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td>
+                                            <a href="category-form.html?id=2" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="category-icon">
+                                                    <i class="bi bi-plus-circle"></i>
+                                                </div>
+                                                Extra
+                                            </div>
+                                        </td>
+                                        <td>Additional toppings for pasta</td>
+                                        <td>5</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td>
+                                            <a href="category-form.html?id=3" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="category-icon">
+                                                    <i class="bi bi-aspect-ratio"></i>
+                                                </div>
+                                                Size
+                                            </div>
+                                        </td>
+                                        <td>Portion sizes for pasta</td>
+                                        <td>3</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td>
+                                            <a href="category-form.html?id=4" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="category-icon">
+                                                    <i class="bi bi-cup-straw"></i>
+                                                </div>
+                                                Drinks
+                                            </div>
+                                        </td>
+                                        <td>Beverages to accompany pasta</td>
+                                        <td>0</td>
+                                        <td><span class="badge bg-secondary">Inactive</span></td>
+                                        <td>
+                                            <a href="category-form.html?id=5" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
