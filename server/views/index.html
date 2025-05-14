@@ -1,297 +1,892 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Kiosk Management System</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
+    <title>FoodKiosk Beheerssysteem</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
         .sidebar {
+            background-color: #212529;
             min-height: 100vh;
+        }
+        .sidebar a {
+            color: #adb5bd;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            color: #fff;
             background-color: #343a40;
         }
-        .sidebar .nav-link {
-            color: #adb5bd;
+        .content-area {
+            padding: 20px;
         }
-        .sidebar .nav-link:hover {
-            color: #ffffff;
-            background-color: #495057;
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            padding-top: 40px;
         }
-        .card-stats {
-            transition: transform 0.2s;
+        .stats-card {
+            border-left: 4px solid;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
         }
-        .card-stats:hover {
-            transform: scale(1.05);
+        .stats-card h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            color: #4e73df;
         }
-        .product-img {
-            width: 100px;
-            height: 100px;
+        .stats-card .number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #5a5c69;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .chart-container {
+            height: 300px;
+        }
+        .order-badge {
+            font-size: 0.8rem;
+        }
+        .food-img {
+            width: 50px;
+            height: 50px;
             object-fit: cover;
         }
     </style>
 </head>
 <body>
-    <!-- Login Modal -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" placeholder="Enter username">
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" placeholder="Enter password">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="window.location.href='#dashboard'">Login</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Layout -->
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-2 d-none d-md-block sidebar">
-                <div class="sidebar-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#dashboard">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#orders">Orders</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#products">Products</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#categories">Categories</a>
-                        </li>
-                    </ul>
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-2 col-md-3 p-0 sidebar">
+                <div class="text-center py-4">
+                    <h4 class="text-white">FoodKiosk</h4>
+                    <p class="text-white-50">Beheerssysteem</p>
                 </div>
-            </nav>
+                <hr class="bg-light">
+                <div class="nav flex-column">
+                    <a href="#dashboard" class="active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+                    <a href="#products"><i class="bi bi-box me-2"></i> Producten</a>
+                    <a href="#categories"><i class="bi bi-tags me-2"></i> Categorieën</a>
+                    <a href="#orders"><i class="bi bi-cart3 me-2"></i> Bestellingen</a>
+                    <a href="#login"><i class="bi bi-box-arrow-left me-2"></i> Uitloggen</a>
+                </div>
+            </div>
 
-            <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <!-- Dashboard Section -->
-                <section id="dashboard" class="py-4">
-                    <h1 class="h2">Dashboard</h1>
+            <!-- Content Area -->
+            <div class="col-lg-10 col-md-9 content-area bg-light">
+                <!-- Login Page -->
+                <div id="login" style="display: none;">
+                    <div class="login-container">
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="text-center mb-4">FoodKiosk Login</h2>
+                                <form>
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Gebruikersnaam</label>
+                                        <input type="text" class="form-control" id="username" placeholder="Voer gebruikersnaam in">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Wachtwoord</label>
+                                        <input type="password" class="form-control" id="password" placeholder="Voer wachtwoord in">
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary">Inloggen</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard -->
+                <div id="dashboard">
+                    <h1 class="mb-4">Dashboard</h1>
                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="card card-stats mb-4">
+                        <!-- Stats Cards -->
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stats-card" style="border-left-color: #4e73df;">
+                                <h4 class="text-primary">Bestellingen Vandaag</h4>
+                                <div class="number">24</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stats-card" style="border-left-color: #1cc88a;">
+                                <h4 class="text-success">Afgewerkte Bestellingen</h4>
+                                <div class="number">18</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stats-card" style="border-left-color: #36b9cc;">
+                                <h4 class="text-info">Bestellingen Deze Maand</h4>
+                                <div class="number">358</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6">
+                            <div class="stats-card" style="border-left-color: #f6c23e;">
+                                <h4 class="text-warning">Omzet Vandaag</h4>
+                                <div class="number">€745,32</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="row mt-4">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">Bestellingen per Maand</h5>
+                                </div>
                                 <div class="card-body">
-                                    <h5 class="card-title">Total Orders Today</h5>
-                                    <p class="card-text display-4">120</p>
+                                    <div class="chart-container">
+                                        <img src="/api/placeholder/600/300" alt="Bestellingen chart" class="img-fluid">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card card-stats mb-4">
-                                <div class="card-body">
-                                    <h5 class="card-title">Revenue Today</h5>
-                                    <p class="card-text display-4">€1,500</p>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">Omzet per Jaar</h5>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card card-stats mb-4">
                                 <div class="card-body">
-                                    <h5 class="card-title">Orders This Month</h5>
-                                    <p class="card-text display-4">2,340</p>
+                                    <div class="chart-container">
+                                        <img src="/api/placeholder/600/300" alt="Omzet chart" class="img-fluid">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
 
-                <!-- Orders Section -->
-                <section id="orders" class="py-4">
-                    <h1 class="h2">Orders</h1>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Date</th>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Total Price</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>001</td>
-                                <td>2025-05-08</td>
-                                <td>Burger</td>
-                                <td>2</td>
-                                <td>€10.00</td>
-                                <td>Completed</td>
-                            </tr>
-                            <tr>
-                                <td>002</td>
-                                <td>2025-05-08</td>
-                                <td>Fries</td>
-                                <td>1</td>
-                                <td>€3.00</td>
-                                <td>Pending</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
-
-                <!-- Products Section -->
-                <section id="products" class="py-4">
-                    <h1 class="h2">Products</h1>
-                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><img src="https://via.placeholder.com/100" class="product-img" alt="Burger"></td>
-                                <td>Burger</td>
-                                <td>Main</td>
-                                <td>€5.00</td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning">Edit</button>
-                                    <button class="btn btn-sm btn-danger">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><img src="https://via.placeholder.com/100" class="product-img" alt="Fries"></td>
-                                <td>Fries</td>
-                                <td>Side</td>
-                                <td>€3.00</td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning">Edit</button>
-                                    <button class="btn btn-sm btn-danger">Delete</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
-
-                <!-- Categories Section -->
-                <section id="categories" class="py-4">
-                    <h1 class="h2">Categories</h1>
-                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Category</button>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Category Name</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Main</td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning">Edit</button>
-                                    <button class="btn btn-sm btn-danger">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Side</td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning">Edit</button>
-                                    <button class="btn btn-sm btn-danger">Delete</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
-            </main>
-        </div>
-    </div>
-
-    <!-- Add Product Modal -->
-    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addProductModalLabel">Add Product</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="productName" class="form-label">Product Name</label>
-                        <input type="text" class="form-control" id="productName" placeholder="Enter product name">
-                    </div>
-                    <div class="mb-3">
-                        <label for="productCategory" class="form-label">Category</label>
-                        <select class="form-select" id="productCategory">
-                            <option>Main</option>
-                            <option>Side</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="productPrice" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="productPrice" placeholder="Enter price">
-                    </div>
-                    <div class="mb-3">
-                        <label for="productImage" class="form-label">Product Image</label>
-                        <input type="file" class="form-control" id="productImage">
+                    <!-- Recent Orders -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="card-title">Recente Bestellingen</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Bestelnr.</th>
+                                            <th>Datum</th>
+                                            <th>Items</th>
+                                            <th>Totaal</th>
+                                            <th>Status</th>
+                                            <th>Acties</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>#1258</td>
+                                            <td>14/05/2025 13:45</td>
+                                            <td>4</td>
+                                            <td>€28,50</td>
+                                            <td><span class="badge bg-success order-badge">Afgerond</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1257</td>
+                                            <td>14/05/2025 13:15</td>
+                                            <td>2</td>
+                                            <td>€15,90</td>
+                                            <td><span class="badge bg-warning order-badge">In bereiding</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1256</td>
+                                            <td>14/05/2025 12:58</td>
+                                            <td>3</td>
+                                            <td>€22,45</td>
+                                            <td><span class="badge bg-success order-badge">Afgerond</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1255</td>
+                                            <td>14/05/2025 12:30</td>
+                                            <td>1</td>
+                                            <td>€8,95</td>
+                                            <td><span class="badge bg-success order-badge">Afgerond</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save Product</button>
+
+                <!-- Products List -->
+                <div id="products" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>Producten</h1>
+                        <a href="#product-form" class="btn btn-success"><i class="bi bi-plus-lg"></i> Nieuw Product</a>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Afbeelding</th>
+                                            <th>Naam</th>
+                                            <th>Categorie</th>
+                                            <th>Prijs</th>
+                                            <th>Voorraad</th>
+                                            <th>Status</th>
+                                            <th>Acties</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><img src="/api/placeholder/50/50" class="food-img" alt="Hamburger"></td>
+                                            <td>Classic Burger</td>
+                                            <td>Burgers</td>
+                                            <td>€8,95</td>
+                                            <td>24</td>
+                                            <td><span class="badge bg-success">Beschikbaar</span></td>
+                                            <td>
+                                                <a href="#product-form" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><img src="/api/placeholder/50/50" class="food-img" alt="Cheeseburger"></td>
+                                            <td>Cheese Burger</td>
+                                            <td>Burgers</td>
+                                            <td>€9,95</td>
+                                            <td>18</td>
+                                            <td><span class="badge bg-success">Beschikbaar</span></td>
+                                            <td>
+                                                <a href="#product-form" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><img src="/api/placeholder/50/50" class="food-img" alt="Frietjes"></td>
+                                            <td>Frietjes Medium</td>
+                                            <td>Sides</td>
+                                            <td>€3,50</td>
+                                            <td>32</td>
+                                            <td><span class="badge bg-success">Beschikbaar</span></td>
+                                            <td>
+                                                <a href="#product-form" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><img src="/api/placeholder/50/50" class="food-img" alt="Cola"></td>
+                                            <td>Cola Medium</td>
+                                            <td>Dranken</td>
+                                            <td>€2,95</td>
+                                            <td>48</td>
+                                            <td><span class="badge bg-success">Beschikbaar</span></td>
+                                            <td>
+                                                <a href="#product-form" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><img src="/api/placeholder/50/50" class="food-img" alt="Veggie Burger"></td>
+                                            <td>Veggie Burger</td>
+                                            <td>Burgers</td>
+                                            <td>€9,95</td>
+                                            <td>0</td>
+                                            <td><span class="badge bg-danger">Niet op voorraad</span></td>
+                                            <td>
+                                                <a href="#product-form" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Product Form -->
+                <div id="product-form" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>Product Toevoegen/Bewerken</h1>
+                        <a href="#products" class="btn btn-outline-secondary">Terug naar Producten</a>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="product-name" class="form-label">Naam Product</label>
+                                            <input type="text" class="form-control" id="product-name" value="Classic Burger">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="product-category" class="form-label">Categorie</label>
+                                            <select class="form-select" id="product-category">
+                                                <option value="">Selecteer categorie</option>
+                                                <option value="1" selected>Burgers</option>
+                                                <option value="2">Sides</option>
+                                                <option value="3">Dranken</option>
+                                                <option value="4">Desserts</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="product-price" class="form-label">Prijs (€)</label>
+                                            <input type="number" class="form-control" id="product-price" step="0.01" value="8.95">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="product-stock" class="form-label">Voorraad</label>
+                                            <input type="number" class="form-control" id="product-stock" value="24">
+                                        </div>
+                                        <div class="mb-3 form-check">
+                                            <input type="checkbox" class="form-check-input" id="product-available" checked>
+                                            <label class="form-check-label" for="product-available">Beschikbaar voor verkoop</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="product-description" class="form-label">Beschrijving</label>
+                                            <textarea class="form-control" id="product-description" rows="3">Klassieke hamburger met sla, tomaat, ui en onze speciale saus.</textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="product-image" class="form-label">Afbeelding</label>
+                                            <input type="file" class="form-control" id="product-image">
+                                            <div class="mt-2">
+                                                <img src="/api/placeholder/150/150" alt="Product afbeelding" class="img-thumbnail">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="button" class="btn btn-outline-secondary me-md-2">Annuleren</button>
+                                    <button type="submit" class="btn btn-primary">Opslaan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories List -->
+                <div id="categories" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>Categorieën</h1>
+                        <a href="#category-form" class="btn btn-success"><i class="bi bi-plus-lg"></i> Nieuwe Categorie</a>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Naam</th>
+                                            <th>Beschrijving</th>
+                                            <th>Aantal Producten</th>
+                                            <th>Status</th>
+                                            <th>Acties</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Burgers</td>
+                                            <td>Alle hamburgers</td>
+                                            <td>5</td>
+                                            <td><span class="badge bg-success">Actief</span></td>
+                                            <td>
+                                                <a href="#category-form" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sides</td>
+                                            <td>Bijgerechten zoals frietjes en nuggets</td>
+                                            <td>4</td>
+                                            <td><span class="badge bg-success">Actief</span></td>
+                                            <td>
+                                                <a href="#category-form" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Dranken</td>
+                                            <td>Frisdrank en andere dranken</td>
+                                            <td>6</td>
+                                            <td><span class="badge bg-success">Actief</span></td>
+                                            <td>
+                                                <a href="#category-form" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Desserts</td>
+                                            <td>Desserts en zoete lekkernijen</td>
+                                            <td>3</td>
+                                            <td><span class="badge bg-success">Actief</span></td>
+                                            <td>
+                                                <a href="#category-form" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Specials</td>
+                                            <td>Tijdelijke producten</td>
+                                            <td>0</td>
+                                            <td><span class="badge bg-secondary">Inactief</span></td>
+                                            <td>
+                                                <a href="#category-form" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+                                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Form -->
+                <div id="category-form" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>Categorie Toevoegen/Bewerken</h1>
+                        <a href="#categories" class="btn btn-outline-secondary">Terug naar Categorieën</a>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="category-name" class="form-label">Naam Categorie</label>
+                                    <input type="text" class="form-control" id="category-name" value="Burgers">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="category-description" class="form-label">Beschrijving</label>
+                                    <textarea class="form-control" id="category-description" rows="3">Alle hamburgers</textarea>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="category-active" checked>
+                                    <label class="form-check-label" for="category-active">Actief</label>
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="button" class="btn btn-outline-secondary me-md-2">Annuleren</button>
+                                    <button type="submit" class="btn btn-primary">Opslaan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders List -->
+                <div id="orders" style="display: none;">
+                    <h1 class="mb-4">Bestellingen</h1>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Bestelnr.</th>
+                                            <th>Datum & Tijd</th>
+                                            <th>Items</th>
+                                            <th>Totaalbedrag</th>
+                                            <th>Status</th>
+                                            <th>Acties</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>#1258</td>
+                                            <td>14/05/2025 13:45</td>
+                                            <td>4</td>
+                                            <td>€28,50</td>
+                                            <td><span class="badge bg-success">Afgerond</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1257</td>
+                                            <td>14/05/2025 13:15</td>
+                                            <td>2</td>
+                                            <td>€15,90</td>
+                                            <td><span class="badge bg-warning text-dark">In bereiding</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1256</td>
+                                            <td>14/05/2025 12:58</td>
+                                            <td>3</td>
+                                            <td>€22,45</td>
+                                            <td><span class="badge bg-success">Afgerond</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1255</td>
+                                            <td>14/05/2025 12:30</td>
+                                            <td>1</td>
+                                            <td>€8,95</td>
+                                            <td><span class="badge bg-success">Afgerond</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1254</td>
+                                            <td>14/05/2025 12:15</td>
+                                            <td>5</td>
+                                            <td>€32,75</td>
+                                            <td><span class="badge bg-success">Afgerond</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1253</td>
+                                            <td>14/05/2025 11:45</td>
+                                            <td>2</td>
+                                            <td>€18,90</td>
+                                            <td><span class="badge bg-success">Afgerond</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1252</td>
+                                            <td>14/05/2025 11:30</td>
+                                            <td>3</td>
+                                            <td>€21,85</td>
+                                            <td><span class="badge bg-success">Afgerond</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>#1251</td>
+                                            <td>14/05/2025 11:00</td>
+                                            <td>1</td>
+                                            <td>€9,95</td>
+                                            <td><span class="badge bg-success">Afgerond</span></td>
+                                            <td><a href="#order-detail" class="btn btn-sm btn-outline-primary">Details</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center mt-4">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Vorige</a>
+                                    </li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#">Volgende</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Detail -->
+                <div id="order-detail" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>Bestelling #1257</h1>
+                        <a href="#orders" class="btn btn-outline-secondary">Terug naar Bestellingen</a>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="card-title">Bestelling Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <tbody>
+                                            <tr>
+                                                <th>Bestelnummer:</th>
+                                                <td>#1257</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Datum & Tijd:</th>
+                                                <td>14/05/2025 13:15</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Status:</th>
+                                                <td><span class="badge bg-warning text-dark">In bereiding</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Klantnaam:</th>
+                                                <td>Jan Janssen</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Betaalmethode:</th>
+                                                <td>Betaalterminal</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="d-flex mt-3">
+                                        <button class="btn btn-success me-2">Markeer als Afgerond</button>
+                                        <button class="btn btn-danger">Annuleer Bestelling</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="card-title">Bestelde Producten</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product</th>
+                                                    <th>Prijs</th>
+                                                    <th>Aantal</th>
+                                                    <th>Subtotaal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Cheese Burger</td>
+                                                    <td>€9,95</td>
+                                                    <td>1</td>
+                                                    <td>€9,95</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Frietjes Medium</td>
+                                                    <td>€3,50</td>
+                                                    <td>1</td>
+                                                    <td>€3,50</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cola Medium</td>
+                                                    <td>€2,45</td>
+                                                    <td>1</td>
+                                                    <td>€2,45</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="3">Totaal:</th>
+                                                    <th>€15,90</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Documentation -->
+                <div id="api-docs" style="display: none;">
+                    <h1 class="mb-4">API Documentatie</h1>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">API Overzicht</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>De FoodKiosk API biedt toegang tot de volgende endpoints:</p>
+                            <ul>
+                                <li><strong>GET /api/categories</strong> - Alle categorieën ophalen</li>
+                                <li><strong>GET /api/products/:categoryId</strong> - Producten per categorie ophalen</li>
+                                <li><strong>POST /api/orders</strong> - Nieuwe bestelling plaatsen</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Categories API -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">GET /api/categories</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Beschrijving</h6>
+                            <p>Haalt alle beschikbare productcategorieën op.</p>
+
+                            <h6>Parameters</h6>
+                            <p>Geen parameters vereist.</p>
+
+                            <h6>Response</h6>
+                            <div class="bg-light p-3 rounded">
+<pre><code>[
+  {
+    "id": 1,
+    "name": "Burgers",
+    "description": "Alle hamburgers",
+    "active": true
+  },
+  {
+    "id": 2,
+    "name": "Sides",
+    "description": "Bijgerechten zoals frietjes en nuggets",
+    "active": true
+  },
+  {
+    "id": 3,
+    "name": "Dranken",
+    "description": "Frisdrank en andere dranken",
+    "active": true
+  }
+]</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products API -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">GET /api/products/:categoryId</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Beschrijving</h6>
+                            <p>Haalt producten op van een specifieke categorie.</p>
+
+                            <h6>Parameters</h6>
+                            <ul>
+                                <li><code>categoryId</code> - ID van de categorie (verplicht)</li>
+                            </ul>
+
+                            <h6>Response</h6>
+                            <div class="bg-light p-3 rounded">
+<pre><code>[
+  {
+    "id": 1,
+    "name": "Classic Burger",
+    "description": "Klassieke hamburger met sla, tomaat, ui en onze speciale saus.",
+    "price": 8.95,
+    "image_url": "/images/classic-burger.jpg",
+    "category_id": 1,
+    "available": true,
+    "stock": 24
+  },
+  {
+    "id": 2,
+    "name": "Cheese Burger",
+    "description": "Klassieke hamburger met cheddarkaas, sla, tomaat en ui.",
+    "price": 9.95,
+    "image_url": "/images/cheese-burger.jpg",
+    "category_id": 1,
+    "available": true,
+    "stock": 18
+  }
+]</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders API -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">POST /api/orders</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Beschrijving</h6>
+                            <p>Plaatst een nieuwe bestelling.</p>
+
+                            <h6>Request Body</h6>
+                            <div class="bg-light p-3 rounded">
+<pre><code>{
+  "customer_name": "Jan Janssen",
+  "payment_method": "cash",
+  "items": [
+    {
+      "product_id": 2,
+      "quantity": 1
+    },
+    {
+      "product_id": 5,
+      "quantity": 1
+    },
+    {
+      "product_id": 8,
+      "quantity": 1
+    }
+  ]
+}</code></pre>
+                            </div>
+
+                            <h6>Response</h6>
+                            <div class="bg-light p-3 rounded">
+<pre><code>{
+  "order_id": 1257,
+  "status": "pending",
+  "total_amount": 15.90,
+  "created_at": "2025-05-14T13:15:00.000Z",
+  "items": [
+    {
+      "product_id": 2,
+      "name": "Cheese Burger",
+      "price": 9.95,
+      "quantity": 1,
+      "subtotal": 9.95
+    },
+    {
+      "product_id": 5,
+      "name": "Frietjes Medium",
+      "price": 3.50,
+      "quantity": 1,
+      "subtotal": 3.50
+    },
+    {
+      "product_id": 8,
+      "name": "Cola Medium",
+      "price": 2.45,
+      "quantity": 1,
+      "subtotal": 2.45
+    }
+  ]
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- Add Category Modal -->
-    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="categoryName" class="form-label">Category Name</label>
-                        <input type="text" class="form-control" id="categoryName" placeholder="Enter category name">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save Category</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-    <!-- Show login modal on page load -->
+    <!-- JavaScript to simulate page navigation -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-            loginModal.show();
+            // Show dashboard by default
+            document.getElementById('dashboard').style.display = 'block';
+            
+            // Get all navigation links
+            const navLinks = document.querySelectorAll('.sidebar a');
+            
+            // Add click event listeners
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Hide all content sections
+                    const contentSections = document.querySelectorAll('.content-area > div');
+                    contentSections.forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Show the selected section
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                    }
+                    
+                    // Update active state
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
         });
     </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
