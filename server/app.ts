@@ -1,33 +1,27 @@
-import express, { Application, Request, Response } from 'express';
-import path from 'path';
-import fs from 'fs';
+import express from "express";
+// import path from "path"; // Als u views serveert
+import authRoutes from "../server/routes/auth.routes"; // Controleer dit pad!
 
-const app: Application = express();
-const PORT: number = 3000;
+const app = express();
+const port = process.env.PORT || 3000; // Of uw voorkeurspoort
 
-// Serve static files from the project root
-app.use(express.static(path.join(__dirname, '..')));
+// Middleware
+app.use(express.json()); // Om JSON request bodies te parsen
+app.use(express.urlencoded({ extended: true })); // Om URL-encoded bodies te parsen
 
-// Route to serve index.html when accessing the root URL
-app.get('/', (req: Request, res: Response) => {
-    const filePath = path.resolve(__dirname, '..', 'server', 'views', 'index.html');
-    console.log(`Attempting to serve file from: ${filePath}`);
+// Uw index.html serveren (voorbeeld, pas aan indien nodig)
+// Als uw index.html in server/views/ staat:
+// app.use(express.static(path.join(__dirname, "server/views"))); 
+// app.get("/", (req, res) => {
+//    res.sendFile(path.join(__dirname, "server/views/index.html"));
+// });
 
-    // Check if the file exists before sending
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
-            console.error(`File not found: ${filePath}`);
-            return res.status(404).send('Index file not found');
-        }
-        res.sendFile(filePath, (err) => {
-            if (err) {
-                console.error(`Error sending file: ${err}`);
-                res.status(500).send('Error serving index.html');
-            }
-        });
-    });
+// API Routes
+app.use("/api/auth", authRoutes);
+// Hier komen later andere routes zoals /api/products, /api/categories etc.
+
+app.listen(port, () => {
+  console.log(`Server draait op http://localhost:${port}` );
 });
 
-app.listen(PORT, () => {
-    console.log(`Server draait op http://localhost:${PORT}`);
-});
+export default app; // Voor Vercel of testen

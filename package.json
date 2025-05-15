@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
     "abbrev": "^1.1.1",
     "accepts": "^2.0.0",
     "acorn": "^8.14.1",
@@ -20,6 +21,7 @@
     "argparse": "^2.0.1",
     "balanced-match": "^1.0.2",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "binary-extensions": "^2.3.0",
     "body-parser": "^2.2.0",
     "brace-expansion": "^1.1.11",
@@ -264,15 +266,17 @@
     "zod-to-json-schema": "^3.24.5"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-     "dev": "nodemon --ext ts --exec ts-node ./server/app.ts"
-},
+    "dev": "nodemon --ext ts --exec ts-node ./server/app.ts"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Simonvt1412/dev2-foodkiosk-back.git"
