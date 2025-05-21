@@ -1,27 +1,22 @@
-import express from "express";
-// import path from "path"; // Als u views serveert
-import authRoutes from "../server/routes/auth.routes"; // Controleer dit pad!
+import express from 'express';
+import path from 'path';
+import productRoutes from './routes/product.routes';
+// ...andere imports...
 
 const app = express();
-const port = process.env.PORT || 3000; // Of uw voorkeurspoort
 
-// Middleware
-app.use(express.json()); // Om JSON request bodies te parsen
-app.use(express.urlencoded({ extended: true })); // Om URL-encoded bodies te parsen
+// ...middleware...
 
-// Uw index.html serveren (voorbeeld, pas aan indien nodig)
-// Als uw index.html in server/views/ staat:
-// app.use(express.static(path.join(__dirname, "server/views"))); 
-// app.get("/", (req, res) => {
-//    res.sendFile(path.join(__dirname, "server/views/index.html"));
-// });
+// Serve static files from server/views
+app.use(express.static(path.join(__dirname, 'views')));
 
-// API Routes
-app.use("/api/auth", authRoutes);
-// Hier komen later andere routes zoals /api/products, /api/categories etc.
-
-app.listen(port, () => {
-  console.log(`Server draait op http://localhost:${port}` );
+// Fallback: stuur index.html voor alle niet-API routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-export default app; // Voor Vercel of testen
+// ...API routes...
+app.use('/api/products', productRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
