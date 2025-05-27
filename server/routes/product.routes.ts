@@ -12,8 +12,8 @@ const router = Router();
 
 router.get('/', getProducts);
 router.get('/category/:category_id', getProductsByCategory);
-router.get('/:id/stock', getProductStock); // get product stock
+router.get('/:id/stock', getProductStock);
 router.post('/', authenticateToken, addProduct);
-router.put('/:id', authenticateToken, updateProduct); // update product
+router.put('/:id', authenticateToken, updateProduct);
 
 export default router;
