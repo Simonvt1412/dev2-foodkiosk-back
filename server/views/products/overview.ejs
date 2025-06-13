@@ -1,0 +1,51 @@
+<div class="container mt-4">
+  <h1>Producten Overzicht</h1>
+  <% const types = [
+    { key: 'portion', label: 'Portion Size' },
+    { key: 'pasta', label: 'Pasta Type' },
+    { key: 'sauce', label: 'Sauce' },
+    { key: 'extra', label: 'Extras' }
+  ]; %>
+  <% types.forEach(type => { %>
+    <h4 class="mt-4 text-decoration-underline"><%= type.label %></h4>
+    <div class="table-responsive">
+      <table class="table table-striped table-sm">
+        <thead>
+          <tr>
+            <th>Afbeelding</th>
+            <th>Naam</th>
+            <th>Prijs</th>
+            <th>Voorraad</th>
+            <th>Status</th>
+            <th>Acties</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.filter(p => p.type === type.key).forEach(product => { %>
+            <tr>
+              <td><img src="<%= product.image_url || '/api/placeholder/50/50' %>" class="food-img" alt="<%= product.name %>"></td>
+              <td><%= product.name %></td>
+              <td>
+                <% if (type.key === 'portion') { %>
+                  €<%= Number(product.price).toFixed(2) %>
+                <% } else { %>
+                  <%= product.price > 0 ? '+€' + Number(product.price).toFixed(2) : 'Inbegrepen' %>
+                <% } %>
+              </td>
+              <td><%= product.stock !== undefined && product.stock !== null ? product.stock : 'N/A' %></td>
+              <td><span class="badge bg-success">Beschikbaar</span></td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary me-1" href="/products/edit/<%= product.id %>">
+                  Bewerken
+                </a>
+                <form action="/products/delete/<%= product.id %>" method="POST" style="display:inline;">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Verwijderen</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% }) %>
+</div> 

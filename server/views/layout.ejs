@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'FoodKiosk Beheerssysteem' %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap');
+    
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      background-color: #28a745;
+      min-height: 100vh;
+      padding: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      z-index: 100;
+    }
+    
+    .content-wrapper {
+      margin-left: 250px;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .brand {
+      color: white;
+      padding: 20px 15px;
+    }
+    
+    .sidebar-nav {
+      padding: 0;
+      list-style: none;
+      margin-top: 20px;
+    }
+    
+    .sidebar-nav li a {
+      display: block;
+      padding: 15px 20px;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: all 0.3s;
+      border-left: 3px solid transparent;
+    }
+    
+    .sidebar-nav li a:hover,
+    .sidebar-nav li a.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-left: 3px solid white;
+    }
+    
+    .sidebar-nav li a i {
+      margin-right: 10px;
+    }
+    
+    .sidebar-footer {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      padding: 0 20px;
+    }
+    
+    /* Login page */
+    .login-container {
+      max-width: 500px;
+      margin: 100px auto;
+    }
+    
+    /* Cards */
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+      border: none;
+    }
+    
+    .card-header {
+      background-color: #fff;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    /* User info in sidebar */
+    .user-info {
+      color: white;
+      padding: 10px 15px;
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+    }
+    
+    .user-name {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <% if (locals.isAuthenticated && locals.page !== 'login') { %>
+    <!-- Sidebar for authenticated users -->
+    <div class="sidebar">
+      <div class="brand">
+        <h3 class="mb-0">
+          <i class="fas fa-utensils me-2"></i> FoodKiosk
+        </h3>
+        <p class="mb-0 small">Beheerssysteem</p>
+      </div>
+      
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/dashboard" class="<%= locals.page === 'dashboard' ? 'active' : '' %>">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="/products" class="<%= locals.page === 'products' ? 'active' : '' %>">
+            <i class="fas fa-pizza-slice"></i> Producten
+          </a>
+        </li>
+        <li>
+          <a href="/orders" class="<%= locals.page === 'orders' ? 'active' : '' %>">
+            <i class="fas fa-shopping-cart"></i> Bestellingen
+          </a>
+        </li>
+        <li>
+          <a href="/categories" class="<%= locals.page === 'categories' ? 'active' : '' %>">
+            <i class="fas fa-th-large"></i> Categorieën
+          </a>
+        </li>
+      </ul>
+      
+      <div class="sidebar-footer">
+        <% if (locals.user) { %>
+          <div class="user-info mb-2">
+            <span class="user-name">
+              <i class="fas fa-user-circle me-1"></i> <%= locals.user.name %>
+            </span>
+            <a href="/auth/logout" class="btn btn-sm btn-outline-light w-100">
+              <i class="fas fa-sign-out-alt me-1"></i> Uitloggen
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+    
+    <div class="content-wrapper">
+      <%- body %>
+    </div>
+  <% } else { %>
+    <!-- No sidebar for login pages -->
+    <div class="container">
+      <%- body %>
+    </div>
+  <% } %>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

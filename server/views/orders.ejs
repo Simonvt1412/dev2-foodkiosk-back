@@ -1,0 +1,430 @@
+<% if (!order) { %>
+  <!-- Orders List View -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">
+      <i class="fas fa-shopping-cart me-2 text-success"></i>Bestellingen
+    </h1>
+    <div class="d-flex gap-3 align-items-center">
+      <select class="form-select" style="min-width: 180px;">
+        <option>Alle statussen</option>
+        <option>Pending</option>
+        <option>Completed</option>
+        <option>In Progress</option>
+      </select>
+      <button class="btn btn-outline-success d-flex align-items-center">
+        <i class="fas fa-sync-alt me-2"></i> Ververs
+      </button>
+    </div>
+  </div>
+  
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="px-4 py-3">Bestelnr.</th>
+              <th class="px-4 py-3">Datum & Tijd</th>
+              <th class="px-4 py-3">Klantnaam</th>
+              <th class="px-4 py-3 text-center">Items</th>
+              <th class="px-4 py-3 text-end">Totaalbedrag</th>
+              <th class="px-4 py-3 text-center">Status</th>
+              <th class="px-4 py-3 text-center">Acties</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (orders && orders.length > 0) { %>
+              <% orders.forEach(function(orderItem) { %>
+                <tr class="border-bottom">
+                  <td class="px-4 py-3">
+                    <span class="fw-bold text-primary">#<%= orderItem.id %></span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span class="text-muted"><%= new Date(orderItem.order_date).toLocaleString('nl-NL') %></span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span class="fw-semibold"><%= orderItem.customer_name || 'Onbekend' %></span>
+                  </td>
+                  <td class="px-4 py-3 text-center">
+                    <span class="badge bg-secondary rounded-pill px-3 py-2 fs-6">
+                      <%= orderItem.items_count || 0 %>
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-end">
+                    <strong class="text-success fs-5">€<%= orderItem.total_amount ? parseFloat(orderItem.total_amount).toFixed(2) : '0.00' %></strong>
+                  </td>
+                  <td class="px-4 py-3 text-center">
+                    <% 
+                    let statusClass = '';
+                    let statusIcon = '';
+                    let statusText = orderItem.status;
+                    
+                    switch(orderItem.status) {
+                      case 'completed':
+                        statusClass = 'bg-success';
+                        statusIcon = 'fa-check-circle';
+                        statusText = 'Afgerond';
+                        break;
+                      case 'pending':
+                        statusClass = 'bg-warning text-dark';
+                        statusIcon = 'fa-clock';
+                        statusText = 'In afwachting';
+                        break;
+                      case 'in_progress':
+                        statusClass = 'bg-info text-white';
+                        statusIcon = 'fa-spinner fa-spin';
+                        statusText = 'In behandeling';
+                        break;
+                      case 'cancelled':
+                        statusClass = 'bg-danger';
+                        statusIcon = 'fa-times-circle';
+                        statusText = 'Geannuleerd';
+                        break;
+                      default:
+                        statusClass = 'bg-secondary';
+                        statusIcon = 'fa-question-circle';
+                    }
+                    %>
+                    <span class="badge <%= statusClass %> px-3 py-2 fs-6 rounded-pill d-inline-flex align-items-center">
+                      <i class="fas <%= statusIcon %> me-2"></i>
+                      <%= statusText %>
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-center">
+                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3" href="/orders/<%= orderItem.id %>">
+                      <i class="fas fa-eye me-1"></i> Details
+                    </a>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="7" class="text-center py-5">
+                  <div class="d-flex flex-column align-items-center">
+                    <i class="fas fa-inbox fs-1 text-muted mb-3"></i>
+                    <h5 class="text-muted">Geen bestellingen gevonden</h5>
+                    <p class="text-muted">Er zijn momenteel geen bestellingen om weer te geven.</p>
+                  </div>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% } else { %>
+  <!-- Order Detail View -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">
+      <i class="fas fa-receipt me-2 text-success"></i>Bestelling #<%= order.id %>
+    </h1>
+    <a class="btn btn-outline-secondary btn-lg rounded-pill" href="/orders">
+      <i class="fas fa-arrow-left me-2"></i> Terug naar Bestellingen
+    </a>
+  </div>
+  
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-light border-0">
+          <h5 class="card-title mb-0">
+            <i class="fas fa-info-circle me-2 text-primary"></i>Bestelling Details
+          </h5>
+        </div>
+        <div class="card-body">
+          <table class="table table-borderless">
+            <tbody>
+              <tr>
+                <th width="150">Bestelnummer:</th>
+                <td><span class="fw-bold text-primary">#<%= order.id %></span></td>
+              </tr>
+              <tr>
+                <th>Datum & Tijd:</th>
+                <td><%= new Date(order.order_date).toLocaleString('nl-NL') %></td>
+              </tr>
+              <tr>
+                <th>Status:</th>
+                <td>
+                  <% 
+                  let statusClass = '';
+                  let statusIcon = '';
+                  let statusText = order.status;
+                  
+                  switch(order.status) {
+                    case 'completed':
+                      statusClass = 'bg-success';
+                      statusIcon = 'fa-check-circle';
+                      statusText = 'Afgerond';
+                      break;
+                    case 'pending':
+                      statusClass = 'bg-warning text-dark';
+                      statusIcon = 'fa-clock';
+                      statusText = 'In afwachting';
+                      break;
+                    case 'in_progress':
+                      statusClass = 'bg-info text-white';
+                      statusIcon = 'fa-spinner fa-spin';
+                      statusText = 'In behandeling';
+                      break;
+                    case 'cancelled':
+                      statusClass = 'bg-danger';
+                      statusIcon = 'fa-times-circle';
+                      statusText = 'Geannuleerd';
+                      break;
+                    default:
+                      statusClass = 'bg-secondary';
+                      statusIcon = 'fa-question-circle';
+                  }
+                  %>
+                  <span class="badge <%= statusClass %> px-3 py-2 fs-6 rounded-pill d-inline-flex align-items-center">
+                    <i class="fas <%= statusIcon %> me-2"></i>
+                    <%= statusText %>
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Klantnaam:</th>
+                <td><%= order.customer_name || 'Onbekend' %></td>
+              </tr>
+              <tr>
+                <th>Totaalbedrag:</th>
+                <td><strong class="fs-4 text-success">€<%= order.total_amount ? parseFloat(order.total_amount).toFixed(2) : '0.00' %></strong></td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Status Update Buttons -->
+          <div class="d-flex gap-2 mt-4 flex-wrap">
+            <% if (order.status !== 'completed') { %>
+              <button class="btn btn-success rounded-pill status-update-btn" 
+                      data-order-id="<%= order.id %>" 
+                      data-status="completed">
+                <i class="fas fa-check-circle me-1"></i> Markeer als Afgerond
+              </button>
+            <% } %>
+            <% if (order.status !== 'in_progress' && order.status !== 'completed') { %>
+              <button class="btn btn-info rounded-pill status-update-btn" 
+                      data-order-id="<%= order.id %>" 
+                      data-status="in_progress">
+                <i class="fas fa-cog me-1"></i> In Behandeling
+              </button>
+            <% } %>
+            <% if (order.status !== 'cancelled') { %>
+              <button class="btn btn-outline-danger rounded-pill status-update-btn" 
+                      data-order-id="<%= order.id %>" 
+                      data-status="cancelled">
+                <i class="fas fa-times-circle me-1"></i> Annuleren
+              </button>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Meals Display -->
+      <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-light border-0">
+          <h5 class="card-title mb-0">
+            <i class="fas fa-utensils me-2 text-warning"></i>Bestelde Maaltijden
+          </h5>
+        </div>
+        <div class="card-body">
+          <% if (typeof meals !== 'undefined' && meals && meals.length > 0) { %>
+            <% meals.forEach(function(meal, index) { %>
+              <div class="card mb-3 border-success">
+                <div class="card-header bg-light">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                      <i class="fas fa-utensils text-warning me-2"></i>
+                      Maaltijd <%= meal.mealNumber %>
+                    </h6>
+                    <span class="badge bg-success fs-6 rounded-pill px-3 py-2">€<%= meal.total.toFixed(2) %></span>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <strong><i class="fas fa-box me-1 text-primary"></i>Portie:</strong><br>
+                      <% if (meal.portion) { %>
+                        <span class="badge bg-light text-success border border-success mt-1 rounded-pill px-3 py-2">
+                          <%= meal.portion.product.name %>
+                          <% if (meal.portion.quantity > 1) { %>(x<%= meal.portion.quantity %>)<% } %>
+                        </span>
+                      <% } else { %>
+                        <span class="badge bg-secondary mt-1 rounded-pill px-3 py-2">Niet gekozen</span>
+                      <% } %>
+                    </div>
+                    <div class="col-md-6">
+                      <strong><i class="fas fa-hamburger me-1 text-success"></i>Pasta:</strong><br>
+                      <% if (meal.pasta) { %>
+                        <span class="badge bg-success mt-1 rounded-pill px-3 py-2">
+                          <%= meal.pasta.product.name %>
+                          <% if (meal.pasta.quantity > 1) { %>(x<%= meal.pasta.quantity %>)<% } %>
+                        </span>
+                      <% } else { %>
+                        <span class="badge bg-secondary mt-1 rounded-pill px-3 py-2">Niet gekozen</span>
+                      <% } %>
+                    </div>
+                    <div class="col-md-6">
+                      <strong><i class="fas fa-fill-drip me-1 text-info"></i>Saus:</strong><br>
+                      <% if (meal.sauce) { %>
+                        <span class="badge bg-primary mt-1 rounded-pill px-3 py-2">
+                          <%= meal.sauce.product.name %>
+                          <% if (meal.sauce.quantity > 1) { %>(x<%= meal.sauce.quantity %>)<% } %>
+                        </span>
+                      <% } else { %>
+                        <span class="badge bg-secondary mt-1 rounded-pill px-3 py-2">Geen saus</span>
+                      <% } %>
+                    </div>
+                    <div class="col-md-6">
+                      <strong><i class="fas fa-plus-circle me-1 text-warning"></i>Extras:</strong><br>
+                      <% if (meal.extras && meal.extras.length > 0) { %>
+                        <% meal.extras.forEach(function(e) { %>
+                          <span class="badge bg-warning text-dark border border-warning me-1 mb-1 rounded-pill px-3 py-2">
+                            <%= e.product.name %>
+                            <% if (e.quantity > 1) { %>(x<%= e.quantity %>)<% } %>
+                          </span>
+                        <% }); %>
+                      <% } else { %>
+                        <span class="badge bg-secondary mt-1 rounded-pill px-3 py-2">Geen</span>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <!-- Fallback for old format -->
+            <div class="alert alert-info border-0 rounded-4">
+              <i class="fas fa-info-circle me-2"></i>
+              Deze bestelling gebruikt het oude formaat. Items worden individueel getoond in de tabel hiernaast.
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-6">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-light border-0">
+          <h5 class="card-title mb-0">
+            <i class="fas fa-list-ul me-2 text-secondary"></i>Bestelde Producten (Individuele Items)
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Product</th>
+                  <th>Type</th>
+                  <th>Prijs</th>
+                  <th>Aantal</th>
+                  <th>Subtotaal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (items && items.length > 0) { %>
+                  <% items.forEach(function(item) { %>
+                    <% if (item.product) { %>
+                      <tr>
+                        <td><%= item.product.name %></td>
+                        <td>
+                          <span class="badge rounded-pill <%= 
+                            item.product.category_id === 1 ? 'bg-light text-success border border-success' :
+                            item.product.category_id === 2 ? 'bg-success' :
+                            item.product.category_id === 3 ? 'bg-primary' :
+                            'bg-warning text-dark'
+                          %>"><%= item.product.category_id === 1 ? 'portion' : 
+                                  item.product.category_id === 2 ? 'pasta' :
+                                  item.product.category_id === 3 ? 'sauce' : 'extra' %></span>
+                        </td>
+                        <td>€<%= parseFloat(item.price_at_order).toFixed(2) %></td>
+                        <td><span class="badge bg-secondary rounded-pill"><%= item.quantity %></span></td>
+                        <td><strong>€<%= (parseFloat(item.price_at_order) * parseInt(item.quantity)).toFixed(2) %></strong></td>
+                      </tr>
+                    <% } %>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                      <i class="fas fa-inbox fs-3 d-block mb-2"></i>
+                      Geen items gevonden
+                    </td>
+                  </tr>
+                <% } %>
+              </tbody>
+              <tfoot class="table-success">
+                <tr>
+                  <th colspan="4">Totaal:</th>
+                  <th>€<%= order.total_amount ? parseFloat(order.total_amount).toFixed(2) : '0.00' %></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<!-- Fix icon styling -->
+<style>
+  /* Fix Font Awesome icon styling */
+  .fas, .far, .fab, .fa {
+    display: inline-block !important;
+    width: 1em !important;
+    text-align: center !important;
+    vertical-align: -0.125em !important;
+  }
+  
+  /* Fix for icons in badges */
+  .badge i {
+    margin-right: 0.25rem;
+    font-size: 0.9em;
+  }
+
+  /* Add some breathing room in tables */
+  .table td, .table th {
+    vertical-align: middle;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle status update buttons
+    document.querySelectorAll('.status-update-btn').forEach(button => {
+      button.addEventListener('click', async function() {
+        const orderId = this.dataset.orderId;
+        const status = this.dataset.status;
+        
+        if (confirm(`Weet je zeker dat je de status wilt wijzigen naar "${status}"?`)) {
+          try {
+            const response = await fetch(`/orders/${orderId}/status`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ status })
+            });
+            
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              const errorText = await response.text();
+              alert(`Fout bij het bijwerken van de status: ${response.status} ${errorText}`);
+            }
+          } catch (error) {
+            console.error('Error updating status:', error);
+            alert(`Er is een fout opgetreden: ${error.message || 'Onbekende fout'}`);
+          }
+        }
+      });
+    });
+
+    // Handle refresh button
+    document.querySelector('.btn-outline-success')?.addEventListener('click', function() {
+      window.location.reload();
+    });
+  });
+</script>

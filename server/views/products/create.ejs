@@ -1,0 +1,116 @@
+<!-- filepath: server/views/products/create.ejs -->
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Nieuw Product Toevoegen</h1>
+    <a class="btn btn-outline-secondary" href="/products">
+      <i class="fas fa-arrow-left me-2"></i> Terug naar Producten
+    </a>
+  </div>
+
+  <% if (locals.error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <form action="/products/create" method="POST" enctype="multipart/form-data">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label" for="name">Naam Product</label>
+              <input class="form-control" id="name" name="name" type="text" value="<%= locals.product?.name || '' %>" required/>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="category_id">Categorie</label>
+              <select class="form-select" id="category_id" name="category_id" required>
+                <option value="">Selecteer categorie</option>
+                <% categories.forEach(function(category) { %>
+                  <option value="<%= category.id %>" <%= locals.product?.category_id == category.id ? 'selected' : '' %>><%= category.name %></option>
+                <% }); %>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="price">Prijs (€)</label>
+              <input class="form-control" id="price" name="price" step="0.01" type="number" value="<%= locals.product?.price || '' %>" required/>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="stock">Voorraad</label>
+              <input class="form-control" id="stock" name="stock" type="number" value="<%= locals.product?.stock || 0 %>" required/>
+            </div>
+            <div class="mb-3 form-check">
+              <input class="form-check-input" id="is_available" name="is_available" type="checkbox" value="true" <%= locals.product?.is_available !== false ? 'checked' : '' %>/>
+              <label class="form-check-label" for="is_available">Beschikbaar voor verkoop</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label" for="description">Beschrijving</label>
+              <textarea class="form-control" id="description" name="description" rows="3"><%= locals.product?.description || '' %></textarea>
+            </div>
+            
+            <!-- New file upload section -->
+            <div class="mb-3">
+              <label class="form-label" for="product_image">Product Afbeelding</label>
+              <input type="file" class="form-control" id="product_image" name="product_image" accept="image/*">
+              <small class="form-text text-muted">Upload een afbeelding (JPG, PNG, GIF, WEBP, SVG, max 5MB)</small>
+            </div>
+            
+            <!-- Image preview section -->
+            <div class="mb-3">
+              <div id="imagePreviewContainer" class="mt-2 d-none">
+                <label class="form-label">Voorbeeld:</label>
+                <img id="imagePreview" src="#" alt="Voorbeeld afbeelding" class="img-thumbnail" style="max-height: 200px;">
+              </div>
+            </div>
+            
+            <!-- URL alternative for external images -->
+            <div class="mb-3">
+              <label class="form-label" for="image_url">OF Externe Afbeelding URL</label>
+              <input class="form-control" id="image_url" name="image_url" type="text" value="<%= locals.product?.image_url || '' %>" placeholder="https://example.com/image.jpg"/>
+              <div class="form-text">Als alternatief kun je een URL naar een externe afbeelding invoeren</div>
+            </div>
+          </div>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <a class="btn btn-outline-secondary me-md-2" href="/products">Annuleren</a>
+          <button class="btn btn-primary" type="submit">Opslaan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Image preview function
+  document.getElementById('product_image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    const preview = document.getElementById('imagePreview');
+    
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+        previewContainer.classList.remove('d-none');
+      }
+      reader.readAsDataURL(file);
+      
+      // Clear the URL field when a file is selected
+      document.getElementById('image_url').value = '';
+    } else {
+      previewContainer.classList.add('d-none');
+    }
+  });
+  
+  // Clear file input when URL is entered
+  document.getElementById('image_url').addEventListener('input', function() {
+    if (this.value) {
+      document.getElementById('product_image').value = '';
+      document.getElementById('imagePreviewContainer').classList.add('d-none');
+    }
+  });
+</script>

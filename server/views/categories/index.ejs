@@ -1,0 +1,213 @@
+<div class="container-fluid p-0">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h1><i class="fas fa-th-large text-success me-2"></i>Categorieën</h1>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+        <i class="fas fa-plus me-2"></i> Nieuwe Categorie
+      </button>
+    </div>
+    <p class="text-muted">Beheer de productcategorieën in het systeem</p>
+  </div>
+
+  <% if (locals.message) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle me-2"></i>
+      <%= message %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <!-- Categories List -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <% if (categories && categories.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th width="50">ID</th>
+                <th>Naam</th>
+                <th>Beschrijving</th>
+                <th width="150">Acties</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% categories.forEach(function(category) { %>
+                <tr>
+                  <td><%= category.id %></td>
+                  <td><strong><%= category.name %></strong></td>
+                  <td><%= category.description || '-' %></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary edit-category" 
+                            data-id="<%= category.id %>"
+                            data-name="<%= category.name %>"
+                            data-description="<%= category.description || '' %>"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#editCategoryModal">
+                      <i class="fas fa-edit"></i> Bewerken
+                    </button>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="text-center py-5">
+          <i class="fas fa-th-large text-muted mb-3" style="font-size: 3rem;"></i>
+          <h4 class="text-muted">Geen categorieën gevonden</h4>
+          <p class="text-muted">Maak nu een categorie aan om producten te kunnen organiseren</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="addCategoryForm" action="/categories" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addCategoryModalLabel">Nieuwe Categorie</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="name" class="form-label">Naam</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Beschrijving</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+          <button type="submit" class="btn btn-success">Opslaan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="editCategoryForm" action="/categories/update" method="POST">
+        <input type="hidden" id="edit_id" name="id">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editCategoryModalLabel">Categorie Bewerken</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="edit_name" class="form-label">Naam</label>
+            <input type="text" class="form-control" id="edit_name" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit_description" class="form-label">Beschrijving</label>
+            <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+          <button type="submit" class="btn btn-primary">Bijwerken</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle edit category modal
+    const editButtons = document.querySelectorAll('.edit-category');
+    editButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const id = this.getAttribute('data-id');
+        const name = this.getAttribute('data-name');
+        const description = this.getAttribute('data-description');
+        
+        document.getElementById('edit_id').value = id;
+        document.getElementById('edit_name').value = name;
+        document.getElementById('edit_description').value = description;
+        
+        // Update form action
+        document.getElementById('editCategoryForm').action = `/categories/${id}`;
+      });
+    });
+    
+    // Handle form submissions via AJAX
+    document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const data = {
+        name: formData.get('name'),
+        description: formData.get('description')
+      };
+      
+      fetch('/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => { throw new Error(err.error || 'Er is een fout opgetreden'); });
+        }
+        return response.json();
+      })
+      .then(() => {
+        // Close modal and reload page
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
+        modal.hide();
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Er is een fout opgetreden: ' + error.message);
+      });
+    });
+    
+    document.getElementById('editCategoryForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const id = formData.get('id');
+      const data = {
+        name: formData.get('name'),
+        description: formData.get('description')
+      };
+      
+      fetch(`/categories/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => { throw new Error(err.error || `HTTP error! status: ${response.status}`); });
+        }
+        return response.json();
+      })
+      .then(() => {
+        // Close modal and reload page
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editCategoryModal'));
+        modal.hide();
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Er is een fout opgetreden bij het bijwerken van de categorie: ' + error.message);
+      });
+    });
+  });
+</script>

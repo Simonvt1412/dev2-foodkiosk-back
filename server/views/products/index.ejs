@@ -1,0 +1,408 @@
+<!-- filepath: server/views/products/index.ejs -->
+<div class="container-fluid p-0">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h1><i class="fas fa-pizza-slice text-success me-2"></i>Producten</h1>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
+        <i class="fas fa-plus me-2"></i> Nieuw Product
+      </button>
+    </div>
+    <div class="row align-items-center mb-3">
+      <div class="col-md-6">
+        <p class="text-muted mb-md-0">Beheer alle producten in het systeem</p>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex justify-content-md-end">
+          <div class="input-group" style="max-width: 300px;">
+            <label class="input-group-text" for="categoryFilter">
+              <i class="fas fa-filter"></i>
+            </label>
+            <select class="form-select" id="categoryFilter">
+              <option value="all" selected>Alle categorieën</option>
+              <% if (categories && categories.length > 0) { %>
+                <% categories.forEach(function(category) { %>
+                  <option value="<%= category.id %>" <%= selectedCategoryId == category.id ? 'selected' : '' %>>
+                    <%= category.name %>
+                  </option>
+                <% }); %>
+              <% } %>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if (locals.message) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle me-2"></i>
+      <%= message %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <!-- Products List -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <% if (products && products.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Afbeelding</th>
+                <th>Naam</th>
+                <th>Prijs</th>
+                <th>Categorie</th>
+                <th>Status</th>
+                <th>Acties</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% products.forEach(function(product) { %>
+                <tr>
+                  <td><%= product.id %></td>
+                  <td>
+                    <% if (product.image_url) { %>
+                      <img src="<%= product.image_url %>" alt="<%= product.name %>" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                    <% } else { %>
+                      <div class="bg-light d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                        <i class="fas fa-image text-muted"></i>
+                      </div>
+                    <% } %>
+                  </td>
+                  <td><strong><%= product.name %></strong></td>
+                  <td>€ <%= parseFloat(product.price).toFixed(2) %></td>
+                  <td>
+                    <% if (product.category && product.category.name) { %>
+                      <span class="badge bg-secondary"><%= product.category.name %></span>
+                    <% } else { %>
+                      <span class="badge bg-light text-muted">Geen categorie</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (product.is_available) { %>
+                      <span class="badge bg-success">Beschikbaar</span>
+                    <% } else { %>
+                      <span class="badge bg-danger">Niet beschikbaar</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary edit-product-btn" 
+                            data-id="<%= product.id %>"
+                            data-name="<%= product.name %>"
+                            data-price="<%= product.price %>"
+                            data-description="<%= product.description || '' %>"
+                            data-category="<%= product.category_id %>"
+                            data-image="<%= product.image_url || '' %>"
+                            data-available="<%= product.is_available ? '1' : '0' %>"
+                            data-voorraad="<%= product.voorraad || '0' %>"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#editProductModal">
+                      <i class="fas fa-edit"></i> Bewerken
+                    </button>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="text-center py-5">
+          <i class="fas fa-pizza-slice text-muted mb-3" style="font-size: 3rem;"></i>
+          <h4 class="text-muted">Geen producten gevonden</h4>
+          <p class="text-muted">
+            <% if (selectedCategoryId !== 'all') { %>
+              Er zijn geen producten in deze categorie. <a href="/products">Bekijk alle producten</a>
+            <% } else { %>
+              Maak nu een product aan om te beginnen
+            <% } %>
+          </p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="addProductForm" action="/products" method="POST" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addProductModalLabel">Nieuw Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="name" class="form-label">Naam Product</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="category_id" class="form-label">Categorie</label>
+                <select class="form-select" id="category_id" name="category_id" required>
+                  <option value="">Selecteer categorie</option>
+                  <% if (categories && categories.length > 0) { %>
+                    <% categories.forEach(function(category) { %>
+                      <option value="<%= category.id %>"><%= category.name %></option>
+                    <% }); %>
+                  <% } %>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="price" class="form-label">Prijs (€)</label>
+                <input type="number" step="0.01" class="form-control" id="price" name="price" value="0.00">
+              </div>
+              <div class="mb-3">
+                <label for="voorraad" class="form-label">Voorraad</label>
+                <input type="number" class="form-control" id="voorraad" name="voorraad" value="0">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="description" class="form-label">Beschrijving</label>
+                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="product_image" class="form-label">Product Afbeelding</label>
+                <input type="file" class="form-control" id="product_image" name="product_image" accept="image/*">
+                <div class="form-text">Upload een afbeelding (JPG, PNG, GIF, max 5MB)</div>
+              </div>
+              <div class="mb-3">
+                <label for="image_url" class="form-label">OF Externe Afbeelding URL</label>
+                <input type="text" class="form-control" id="image_url" name="image_url" placeholder="https://example.com/image.jpg">
+              </div>
+              <div class="mb-3 form-check">
+                <input class="form-check-input" type="checkbox" id="is_available" name="is_available" value="1" checked>
+                <label class="form-check-label" for="is_available">Beschikbaar voor verkoop</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+          <button type="submit" class="btn btn-success">Product Toevoegen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="editProductForm">
+        <input type="hidden" id="edit_id" name="id">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editProductModalLabel">Product Bewerken</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="edit_name" class="form-label">Naam Product</label>
+                <input type="text" class="form-control" id="edit_name" name="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="edit_category_id" class="form-label">Categorie</label>
+                <select class="form-select" id="edit_category_id" name="category_id" required>
+                  <option value="">Selecteer categorie</option>
+                  <% if (categories && categories.length > 0) { %>
+                    <% categories.forEach(function(category) { %>
+                      <option value="<%= category.id %>"><%= category.name %></option>
+                    <% }); %>
+                  <% } %>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="edit_price" class="form-label">Prijs (€)</label>
+                <input type="number" step="0.01" class="form-control" id="edit_price" name="price">
+              </div>
+              <div class="mb-3">
+                <label for="edit_voorraad" class="form-label">Voorraad</label>
+                <input type="number" class="form-control" id="edit_voorraad" name="voorraad" value="0">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="edit_description" class="form-label">Beschrijving</label>
+                <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">Huidige Afbeelding:</label>
+                <div id="image_preview_container" class="mb-2">
+                  <img id="edit_image_preview" src="" alt="Product afbeelding" class="img-thumbnail" style="max-height: 150px;">
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="edit_image_url" class="form-label">Afbeelding URL</label>
+                <input type="text" class="form-control" id="edit_image_url" name="image_url">
+              </div>
+              
+              <div class="mb-3 form-check">
+                <input class="form-check-input" type="checkbox" id="edit_is_available" name="is_available" value="1">
+                <label class="form-check-label" for="edit_is_available">Beschikbaar voor verkoop</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+          <button type="submit" class="btn btn-primary">Bijwerken</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize category filter
+    const categoryFilter = document.getElementById('categoryFilter');
+    if (categoryFilter) {
+      categoryFilter.addEventListener('change', function() {
+        const categoryId = this.value;
+        if (categoryId === 'all') {
+          window.location.href = '/products';
+        } else {
+          window.location.href = '/products?category=' + categoryId;
+        }
+      });
+    }
+    
+    // Initialize edit product buttons
+    document.querySelectorAll('.edit-product-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const id = this.getAttribute('data-id');
+        const name = this.getAttribute('data-name');
+        const price = this.getAttribute('data-price');
+        const description = this.getAttribute('data-description');
+        const categoryId = this.getAttribute('data-category');
+        const imageUrl = this.getAttribute('data-image');
+        const isAvailable = this.getAttribute('data-available') === '1';
+        const voorraad = this.getAttribute('data-voorraad');
+        
+        // Populate form fields
+        document.getElementById('edit_id').value = id;
+        document.getElementById('edit_name').value = name;
+        document.getElementById('edit_price').value = price;
+        document.getElementById('edit_description').value = description || '';
+        document.getElementById('edit_voorraad').value = voorraad || '0';
+        document.getElementById('edit_is_available').checked = isAvailable;
+        
+        // Set category dropdown
+        const categorySelect = document.getElementById('edit_category_id');
+        if (categorySelect) {
+          for (let i = 0; i < categorySelect.options.length; i++) {
+            if (categorySelect.options[i].value == categoryId) {
+              categorySelect.selectedIndex = i;
+              break;
+            }
+          }
+        }
+        
+        // Set image preview if available
+        const imagePreview = document.getElementById('edit_image_preview');
+        const imageContainer = document.getElementById('image_preview_container');
+        
+        if (imageUrl && imageUrl.trim() !== '') {
+          imagePreview.src = imageUrl;
+          document.getElementById('edit_image_url').value = imageUrl;
+          imageContainer.style.display = 'block';
+        } else {
+          imageContainer.style.display = 'none';
+        }
+      });
+    });
+    
+    // Add product form submission handling
+    const addProductForm = document.getElementById('addProductForm');
+    if (addProductForm) {
+      addProductForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('/products', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => { 
+              throw new Error(err.error || `HTTP error! status: ${response.status}`);
+            });
+          }
+          return response.json();
+        })
+        .then(() => {
+          // Close modal and reload page
+          const modal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
+          modal.hide();
+          window.location.reload();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Er is een fout opgetreden bij het toevoegen van het product: ' + error.message);
+        });
+      });
+    }
+    
+    // Edit product form submission handling
+    const editProductForm = document.getElementById('editProductForm');
+    if (editProductForm) {
+      editProductForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const productId = document.getElementById('edit_id').value;
+        
+        // Create a product data object
+        const productData = {
+          name: document.getElementById('edit_name').value,
+          description: document.getElementById('edit_description').value,
+          price: parseFloat(document.getElementById('edit_price').value),
+          category_id: parseInt(document.getElementById('edit_category_id').value),
+          voorraad: parseInt(document.getElementById('edit_voorraad').value || '0'),
+          is_available: document.getElementById('edit_is_available').checked,
+          image_url: document.getElementById('edit_image_url').value
+        };
+        
+        console.log('Updating product:', productId, productData);
+        
+        fetch(`/products/${productId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData)
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => { 
+              throw new Error(err.error || `HTTP error! status: ${response.status}`);
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Product updated successfully:', data);
+          // Close modal and reload page
+          const modal = bootstrap.Modal.getInstance(document.getElementById('editProductModal'));
+          modal.hide();
+          window.location.href = '/products?message=Product+succesvol+bijgewerkt';
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Er is een fout opgetreden bij het bijwerken van het product: ' + error.message);
+        });
+      });
+    }
+  });
+</script>
